@@ -46,7 +46,7 @@ export function Hero() {
       <div
         ref={bgRef}
         className="absolute inset-0 scale-125 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/images/hero.svg)' }}
+        style={{ backgroundImage: 'url(/images/hero.jpg)' }}
       />
       <div className="absolute inset-0 bg-zinc-950/50" />
       <h1 className="font-hero relative text-5xl text-zinc-50 md:text-7xl">
