@@ -10,6 +10,7 @@ type ModalProps = {
 
 export function Modal({ item, onClose }: ModalProps) {
   const [copied, setCopied] = useState(false);
+  const [imageLanded, setImageLanded] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -68,13 +69,19 @@ export function Modal({ item, onClose }: ModalProps) {
           <img src={item.beforeImage} alt="Before" className="aspect-square w-full rounded-lg object-cover" />
           <motion.img
             layoutId={`gallery-image-${item.id}`}
+            onLayoutAnimationComplete={() => setImageLanded(true)}
             src={item.afterImage}
             alt="After"
             className="aspect-square w-full rounded-lg object-cover"
           />
         </div>
 
-        <div className="mt-4 flex items-start justify-between gap-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: imageLanded ? 1 : 0 }}
+          transition={{ duration: 0.25 }}
+          className="mt-4 flex items-start justify-between gap-4"
+        >
           <p className="text-sm text-zinc-950 dark:text-zinc-50">{item.prompt}</p>
           <button
             type="button"
@@ -86,7 +93,7 @@ export function Modal({ item, onClose }: ModalProps) {
           >
             {copied ? <Check size={18} /> : <Copy size={18} />}
           </button>
-        </div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
