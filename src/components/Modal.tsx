@@ -35,14 +35,14 @@ export function Modal({ item, onClose }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-sm opacity-100 transition-opacity duration-200 starting:opacity-0"
       onClick={onClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Gallery item detail"
-        className="relative mx-4 max-w-2xl rounded-lg bg-zinc-50 p-6 dark:bg-zinc-950"
+        className="relative mx-4 max-w-2xl scale-100 rounded-lg bg-zinc-50 p-6 opacity-100 transition-all duration-200 starting:scale-95 starting:opacity-0 dark:bg-zinc-950"
         onClick={(event) => event.stopPropagation()}
       >
         <button
