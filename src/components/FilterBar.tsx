@@ -6,7 +6,7 @@ type FilterBarProps = {
 
 export function FilterBar({ categories, active, onSelect }: FilterBarProps) {
   return (
-    <nav className="flex flex-wrap justify-center gap-3 px-4 py-8">
+    <nav className="sticky top-0 z-30 flex flex-wrap justify-center gap-3 bg-zinc-50/90 px-4 py-6 backdrop-blur-sm dark:bg-zinc-950/90">
       {categories.map((category) => (
         <button
           key={category}

@@ -5,6 +5,7 @@ import { FilterBar } from './components/FilterBar';
 import { GalleryGrid } from './components/GalleryGrid';
 import { Modal } from './components/Modal';
 import { ThemeToggle } from './components/ThemeToggle';
+import { Footer } from './components/Footer';
 import { galleryItems } from './data/gallery';
 import type { GalleryItem } from './types';
 
@@ -22,6 +23,7 @@ function App() {
         <FilterBar categories={categories} active={activeCategory} onSelect={setActiveCategory} />
         <GalleryGrid items={galleryItems} activeCategory={activeCategory} onSelect={setSelectedItem} />
       </div>
+      <Footer />
       <AnimatePresence>
         {selectedItem && <Modal key={selectedItem.id} item={selectedItem} onClose={() => setSelectedItem(null)} />}
       </AnimatePresence>
