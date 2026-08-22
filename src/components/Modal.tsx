@@ -1,15 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { Copy, Check, X } from 'lucide-react';
+import { gsap } from 'gsap';
+import { Flip } from 'gsap/Flip';
+import { useGSAP } from '@gsap/react';
 import type { GalleryItem } from '../types';
+
+gsap.registerPlugin(Flip, useGSAP);
 
 type ModalProps = {
   item: GalleryItem;
   onClose: () => void;
+  flipState: Flip.FlipState | null;
 };
 
-export function Modal({ item, onClose }: ModalProps) {
+export function Modal({ item, onClose, flipState }: ModalProps) {
   const [copied, setCopied] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const afterImgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -21,6 +28,17 @@ export function Modal({ item, onClose }: ModalProps) {
 
   useEffect(() => {
     closeButtonRef.current?.focus();
+  }, []);
+
+  useGSAP(() => {
+    if (!flipState || !afterImgRef.current) return;
+    Flip.from(flipState, {
+      targets: afterImgRef.current,
+      duration: 0.5,
+      ease: 'power2.inOut',
+      scale: true,
+      absolute: true,
+    });
   }, []);
 
   async function handleCopy() {
@@ -57,7 +75,12 @@ export function Modal({ item, onClose }: ModalProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <img src={item.beforeImage} alt="Before" className="aspect-square w-full rounded-lg object-cover" />
-          <img src={item.afterImage} alt="After" className="aspect-square w-full rounded-lg object-cover" />
+          <img
+            ref={afterImgRef}
+            src={item.afterImage}
+            alt="After"
+            className="aspect-square w-full rounded-lg object-cover"
+          />
         </div>
 
         <div className="mt-4 flex items-start justify-between gap-4">
