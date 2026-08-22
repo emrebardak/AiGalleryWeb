@@ -35,7 +35,7 @@ export function Hero() {
 
   function handleScrollClick(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
-    gsap.to(window, { duration: 1, scrollTo: '#gallery', ease: 'power2.inOut' });
+    gsap.to(window, { duration: 1, scrollTo: { y: '#gallery' }, ease: 'power2.inOut' });
   }
 
   return (
