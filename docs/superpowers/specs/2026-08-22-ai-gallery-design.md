@@ -16,7 +16,7 @@ Single-page React app showing before/after AI image pairs in a filterable galler
 - **Fonts:** `Boxing` (Fontshare, ITF Free Font License — free, self-hosted) for the hero headline only, self-hosted via `@font-face` from `Boxing-Regular.woff2`, `font-display: swap`. Font files copied from user-supplied `Boxing_Complete/Fonts/WEB/fonts/` into `public/fonts/`. `JetBrains Mono` for everything else — nav, filter buttons, modal prompt text, all UI chrome. No Google Fonts `<link>`.
 - **Grid:** strict equal-size cards, uniform gap, `grid-cols-2 md:grid-cols-3 lg:grid-cols-4`. No masonry/bento — matches "no clutter, focus on visuals."
 - **Corner radius:** one scale for the whole page — soft, `rounded-lg` (~8px) on cards and modal, `rounded-full` on filter buttons/pills. No mixing beyond that split.
-- **Dark mode:** supported via `dark:` Tailwind variant, follows `prefers-color-scheme` (Section 6.C taste-skill guardrail — off-black/off-white, never pure `#000`/`#fff`).
+- **Dark mode:** supported via `dark:` Tailwind variant (class-based, `.dark` on `<html>`), off-black/off-white never pure `#000`/`#fff`. Defaults to `prefers-color-scheme` on first visit, overridable via a fixed toggle button, persisted in `localStorage`.
 
 ## Data model
 ```ts
