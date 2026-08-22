@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Hero } from './components/Hero';
 import { FilterBar } from './components/FilterBar';
 import { GalleryGrid } from './components/GalleryGrid';
+import { Modal } from './components/Modal';
 import { galleryItems } from './data/gallery';
 import type { GalleryItem } from './types';
 
@@ -18,6 +19,7 @@ function App() {
         <FilterBar categories={categories} active={activeCategory} onSelect={setActiveCategory} />
         <GalleryGrid items={galleryItems} activeCategory={activeCategory} onSelect={setSelectedItem} />
       </div>
+      {selectedItem && <Modal item={selectedItem} onClose={() => setSelectedItem(null)} />}
     </main>
   );
 }
