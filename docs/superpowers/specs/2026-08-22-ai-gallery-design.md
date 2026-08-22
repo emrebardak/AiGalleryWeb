@@ -6,7 +6,7 @@ Single-page React app showing before/after AI image pairs in a filterable galler
 ## Stack
 - React 18 + Vite + TypeScript
 - Tailwind CSS
-- transitions-dev skill (CSS/Tailwind transitions — hover scale, modal open/close, stagger, scroll-arrow bounce). No JS animation library; all motion is CSS-driven per the skill's patterns.
+- transitions-dev skill (CSS/Tailwind transitions — hover scale, modal open/close, stagger). All motion is CSS-driven per the skill's patterns, EXCEPT the Hero's scroll-arrow smooth-scroll and background parallax, which use GSAP + ScrollTrigger + ScrollToPlugin (explicit user override of the original "no JS animation library" constraint, scoped to the Hero only).
 - lucide-react (arrow-down, copy, check icons)
 - No backend, no router, no external CMS. Single page, in-memory state only.
 
