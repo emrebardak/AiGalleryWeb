@@ -12,7 +12,7 @@ Design spec: [docs/superpowers/specs/2026-08-22-ai-gallery-design.md](docs/super
 - No backend, no router, no DB. Gallery items are a hardcoded array in `src/data/gallery.ts`.
 
 ## Visual design
-- **Colors:** cold mono — `zinc-950`/`zinc-50` (inverted in dark mode). One accent (electric blue) only for copy-button success state + focus rings. Never introduce a second accent color.
+- **Colors:** cold mono, dark-only — `zinc-950` background / `zinc-50` text. No light theme, no theme toggle. One accent (electric blue) only for copy-button success state + focus rings. Never introduce a second accent color.
 - **Fonts:** `Boxing` (self-hosted, `public/fonts/Boxing-Regular.woff2`) for the hero headline ONLY. `JetBrains Mono` for everything else (nav, buttons, modal prompt text, body). Self-hosted `@font-face`, no Google Fonts `<link>`.
 - **Grid:** masonry via CSS columns (`columns-2 md:columns-3 lg:columns-4`, cards keep natural photo aspect ratio, `break-inside-avoid`) — not a strict equal grid.
 - **Radius:** `rounded-lg` on cards/modal, `rounded-full` on pills/filter buttons. Don't introduce other radius values.

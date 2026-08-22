@@ -12,11 +12,11 @@ Single-page React app showing before/after AI image pairs in a filterable galler
 
 ## Visual design
 
-- **Colors:** cold mono palette — `zinc-950` text / `zinc-50` background (dark-mode: inverted, `zinc-50` text / `zinc-950` bg). Single accent color (electric blue) used only for the copy-button success state and focus rings — nowhere else. Images carry all remaining color.
+- **Colors:** cold mono palette, dark-only — `zinc-50` text / `zinc-950` background. Single accent color (electric blue) used only for the copy-button success state and focus rings — nowhere else. Images carry all remaining color.
 - **Fonts:** `Boxing` (Fontshare, ITF Free Font License — free, self-hosted) for the hero headline only, self-hosted via `@font-face` from `Boxing-Regular.woff2`, `font-display: swap`. Font files copied from user-supplied `Boxing_Complete/Fonts/WEB/fonts/` into `public/fonts/`. `JetBrains Mono` for everything else — nav, filter buttons, modal prompt text, all UI chrome. No Google Fonts `<link>`.
 - **Grid:** masonry via CSS columns (`columns-2 md:columns-3 lg:columns-4`), cards keep their natural photo aspect ratio instead of a forced square, uniform gap via `break-inside-avoid` + margin (user-requested change from the original strict equal grid, for visual rhythm).
 - **Corner radius:** one scale for the whole page — soft, `rounded-lg` (~8px) on cards and modal, `rounded-full` on filter buttons/pills. No mixing beyond that split.
-- **Dark mode:** supported via `dark:` Tailwind variant (class-based, `.dark` on `<html>`), off-black/off-white never pure `#000`/`#fff`. Defaults to `prefers-color-scheme` on first visit, overridable via a fixed toggle button, persisted in `localStorage`.
+- **Theme:** dark-only, no light mode, no toggle. User-requested removal after trying a toggleable light/dark system — the site is permanently `zinc-950` background / `zinc-50` text (off-black/off-white, never pure `#000`/`#fff`).
 
 ## Data model
 ```ts
