@@ -13,7 +13,7 @@ export function Hero() {
       <a
         href="#gallery"
         aria-label="Scroll to gallery"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-zinc-50 transition-opacity hover:opacity-70"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-zinc-50 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       >
         <ChevronDown size={32} />
       </a>

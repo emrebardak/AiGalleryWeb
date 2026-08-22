@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Copy, Check, X } from 'lucide-react';
 import type { GalleryItem } from '../types';
 
@@ -9,6 +9,7 @@ type ModalProps = {
 
 export function Modal({ item, onClose }: ModalProps) {
   const [copied, setCopied] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -18,14 +19,18 @@ export function Modal({ item, onClose }: ModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(item.prompt);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      document.execCommand('copy');
+      // clipboard unavailable; leave the icon unchanged, no error UI per spec
     }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
@@ -34,14 +39,18 @@ export function Modal({ item, onClose }: ModalProps) {
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Gallery item detail"
         className="relative mx-4 max-w-2xl rounded-lg bg-zinc-50 p-6 dark:bg-zinc-950"
         onClick={(event) => event.stopPropagation()}
       >
         <button
+          ref={closeButtonRef}
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 text-zinc-950 transition-opacity hover:opacity-70 dark:text-zinc-50"
+          className="absolute right-4 top-4 text-zinc-950 transition-opacity hover:opacity-70 dark:text-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <X size={20} />
         </button>
@@ -57,7 +66,7 @@ export function Modal({ item, onClose }: ModalProps) {
             type="button"
             onClick={handleCopy}
             aria-label="Copy prompt"
-            className={`shrink-0 rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`shrink-0 rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
               copied ? 'text-blue-500' : 'text-zinc-950 hover:opacity-70 dark:text-zinc-50'
             }`}
           >
