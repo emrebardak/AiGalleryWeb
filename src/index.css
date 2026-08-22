@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@fontsource/jetbrains-mono";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @font-face {
   font-family: "Boxing";
   src: url("/fonts/Boxing-Regular.woff2") format("woff2");
@@ -20,9 +22,7 @@ body {
   color: var(--color-zinc-950);
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--color-zinc-950);
-    color: var(--color-zinc-50);
-  }
+.dark body {
+  background-color: var(--color-zinc-950);
+  color: var(--color-zinc-50);
 }

@@ -49,9 +49,12 @@ export function Hero() {
         style={{ backgroundImage: 'url(/images/hero.jpg)' }}
       />
       <div className="absolute inset-0 bg-zinc-950/50" />
-      <h1 className="font-hero relative text-5xl text-zinc-50 md:text-7xl">
-        AI Gallery
-      </h1>
+      <div className="relative flex flex-col items-center gap-4 px-4 text-center">
+        <h1 className="font-hero text-5xl text-zinc-50 md:text-7xl">AI Gallery</h1>
+        <p className="max-w-md text-sm text-zinc-200 md:text-base">
+          Prompts and the images they became, before and after, side by side.
+        </p>
+      </div>
       <a
         href="#gallery"
         onClick={handleScrollClick}
