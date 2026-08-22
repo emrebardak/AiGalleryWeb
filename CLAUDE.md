@@ -20,7 +20,7 @@ Design spec: [docs/superpowers/specs/2026-08-22-ai-gallery-design.md](docs/super
 ## Skills to use in this project
 
 - **transitions-dev** — for ANY hover, modal open/close, fade, or stagger animation. All motion is CSS/Tailwind-driven — no Framer Motion or other JS animation library, EXCEPT the Hero (see below). Load this skill before writing/editing animation code outside the Hero.
-- **gsap-skills** (gsap-core, gsap-scrolltrigger, gsap-react, gsap-plugins) — Hero only: background parallax (ScrollTrigger scrub) and scroll-arrow smooth-scroll (ScrollToPlugin), via the `useGSAP` hook. This is a deliberate, user-approved exception to the CSS-only rule above — don't extend GSAP to other components without asking first.
+- **gsap-skills** (gsap-core, gsap-scrolltrigger, gsap-react, gsap-plugins) — user-approved exception to the CSS-only rule above, currently used in: Hero (background parallax via ScrollTrigger scrub, scroll-arrow smooth-scroll via ScrollToPlugin), GalleryGrid (scroll-triggered staggered card reveal), Modal (Flip-plugin morph of the clicked card's image into the modal). All via the `useGSAP` hook. Don't extend GSAP to other components without asking first.
 - **ponytail** (full) — active for all coding work in this repo. Simplest working solution first: native CSS/stdlib before deps, no speculative abstractions, no admin UI/backend for adding gallery items (dev edits `src/data/gallery.ts` directly).
 - **superpowers:brainstorming** — before any new feature or behavior change, not just at project start.
 - **superpowers:writing-plans** — before implementing anything from a spec.
