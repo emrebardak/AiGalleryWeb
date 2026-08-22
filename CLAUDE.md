@@ -7,20 +7,29 @@ Design spec: [docs/superpowers/specs/2026-08-22-ai-gallery-design.md](docs/super
 ## Stack
 - React 18 + Vite + TypeScript
 - Tailwind CSS
+- Framer Motion (`framer-motion`) — the one JS animation library used in this project. Do not add a second one (e.g. GSAP) alongside it; animation libraries fight over the same frames if mixed on the same elements.
 - lucide-react (icons)
 - No backend, no router, no DB. Gallery items are a hardcoded array in `src/data/gallery.ts`.
 
 ## Visual design
 - **Colors:** cold mono — `zinc-950`/`zinc-50` (inverted in dark mode). One accent (electric blue) only for copy-button success state + focus rings. Never introduce a second accent color.
 - **Fonts:** `Boxing` (self-hosted, `public/fonts/Boxing-Regular.woff2`) for the hero headline ONLY. `JetBrains Mono` for everything else (nav, buttons, modal prompt text, body). Self-hosted `@font-face`, no Google Fonts `<link>`.
-- **Grid:** strict equal-size cards (`grid-cols-2 md:grid-cols-3 lg:grid-cols-4`), no masonry/bento.
+- **Grid:** masonry via CSS columns (`columns-2 md:columns-3 lg:columns-4`, cards keep natural photo aspect ratio, `break-inside-avoid`) — not a strict equal grid.
 - **Radius:** `rounded-lg` on cards/modal, `rounded-full` on pills/filter buttons. Don't introduce other radius values.
 - **No em-dashes** in any UI copy.
 
+## Motion
+
+All JS-driven animation is Framer Motion (`framer-motion`). Current usage:
+- **Hero** — `useScroll`/`useTransform` for background parallax; native `scrollIntoView({behavior:'smooth'})` for the scroll-arrow (no library needed for that one).
+- **GalleryGrid** — `whileInView` + `staggerChildren` variants for the scroll-triggered staggered card reveal (replays on filter change via the `key={activeCategory}` remount).
+- **GalleryCard** — `whileHover`/`whileFocus` scale + z-index lift (card pops to front, doesn't open anything).
+- **GalleryCard ↔ Modal** — matching `layoutId="gallery-image-{id}"` on the card's and modal's `<motion.img>` drives the shared-layout morph animation automatically on open AND close (wrapped in `AnimatePresence` in `App.tsx`). Don't hand-roll position math for this — that's what `layoutId` is for.
+
+Small CSS-only transitions (button hover opacity, focus rings) can still use plain Tailwind `transition-*` utilities — reach for Framer Motion when the effect needs JS (scroll-linked values, shared-layout, orchestrated stagger), not for a one-property hover fade.
+
 ## Skills to use in this project
 
-- **transitions-dev** — for ANY hover, modal open/close, fade, or stagger animation. All motion is CSS/Tailwind-driven — no Framer Motion or other JS animation library, EXCEPT the Hero (see below). Load this skill before writing/editing animation code outside the Hero.
-- **gsap-skills** (gsap-core, gsap-scrolltrigger, gsap-react, gsap-plugins) — user-approved exception to the CSS-only rule above, currently used in: Hero (background parallax via ScrollTrigger scrub, scroll-arrow smooth-scroll via ScrollToPlugin), GalleryGrid (scroll-triggered staggered card reveal), Modal (Flip-plugin morph of the clicked card's image into the modal). All via the `useGSAP` hook. Don't extend GSAP to other components without asking first.
 - **ponytail** (full) — active for all coding work in this repo. Simplest working solution first: native CSS/stdlib before deps, no speculative abstractions, no admin UI/backend for adding gallery items (dev edits `src/data/gallery.ts` directly).
 - **superpowers:brainstorming** — before any new feature or behavior change, not just at project start.
 - **superpowers:writing-plans** — before implementing anything from a spec.
