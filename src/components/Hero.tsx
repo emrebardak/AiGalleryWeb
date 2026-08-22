@@ -12,6 +12,7 @@ export function Hero() {
       <ShaderGroupSwitcher
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', minWidth: 0, minHeight: 0 }}
       />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-zinc-50 dark:to-zinc-950" />
       <div className="relative flex flex-col items-center gap-4 px-4 text-center">
         <h1 className="font-hero text-5xl text-zinc-50 md:text-7xl">AI Gallery</h1>
         <p className="max-w-md text-sm text-zinc-300 md:text-base">
