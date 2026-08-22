@@ -4,7 +4,6 @@ import { Hero } from './components/Hero';
 import { FilterBar } from './components/FilterBar';
 import { GalleryGrid } from './components/GalleryGrid';
 import { Modal } from './components/Modal';
-import { ThemeToggle } from './components/ThemeToggle';
 import { Footer } from './components/Footer';
 import { galleryItems } from './data/gallery';
 import type { GalleryItem } from './types';
@@ -17,7 +16,6 @@ function App() {
 
   return (
     <main>
-      <ThemeToggle />
       <Hero />
       <div id="gallery">
         <FilterBar categories={categories} active={activeCategory} onSelect={setActiveCategory} />

@@ -52,7 +52,7 @@ export function Modal({ item, onClose }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Gallery item detail"
-        className="relative mx-4 max-w-2xl rounded-lg bg-zinc-50 p-6 dark:bg-zinc-950"
+        className="relative mx-4 max-w-2xl rounded-lg bg-zinc-950 p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -60,7 +60,7 @@ export function Modal({ item, onClose }: ModalProps) {
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 text-zinc-950 transition-opacity hover:opacity-70 dark:text-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          className="absolute right-4 top-4 text-zinc-50 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <X size={20} />
         </button>
@@ -82,13 +82,13 @@ export function Modal({ item, onClose }: ModalProps) {
           transition={{ duration: 0.25 }}
           className="mt-4 flex items-start justify-between gap-4"
         >
-          <p className="text-sm text-zinc-950 dark:text-zinc-50">{item.prompt}</p>
+          <p className="text-sm text-zinc-50">{item.prompt}</p>
           <button
             type="button"
             onClick={handleCopy}
             aria-label="Copy prompt"
             className={`shrink-0 rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-              copied ? 'text-blue-500' : 'text-zinc-950 hover:opacity-70 dark:text-zinc-50'
+              copied ? 'text-blue-500' : 'text-zinc-50 hover:opacity-70'
             }`}
           >
             {copied ? <Check size={18} /> : <Copy size={18} />}
