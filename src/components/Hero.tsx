@@ -1,41 +1,20 @@
 import { useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import { useGSAP } from '@gsap/react';
-
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
-        gsap.to(bgRef.current, {
-          yPercent: 20,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-      });
-
-      return () => mm.revert();
-    },
-    { scope: sectionRef }
-  );
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', reduceMotion ? '0%' : '20%']);
 
   function handleScrollClick(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
-    gsap.to(window, { duration: 1, scrollTo: { y: '#gallery' }, ease: 'power2.inOut' });
+    document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   return (
@@ -43,10 +22,9 @@ export function Hero() {
       ref={sectionRef}
       className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden"
     >
-      <div
-        ref={bgRef}
+      <motion.div
+        style={{ y: bgY, backgroundImage: 'url(/images/hero.jpg)' }}
         className="absolute inset-0 scale-125 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/images/hero.jpg)' }}
       />
       <div className="absolute inset-0 bg-zinc-950/50" />
       <div className="relative flex flex-col items-center gap-4 px-4 text-center">

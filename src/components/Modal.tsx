@@ -1,22 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { Copy, Check, X } from 'lucide-react';
-import { gsap } from 'gsap';
-import { Flip } from 'gsap/Flip';
-import { useGSAP } from '@gsap/react';
+import { motion } from 'framer-motion';
 import type { GalleryItem } from '../types';
-
-gsap.registerPlugin(Flip, useGSAP);
 
 type ModalProps = {
   item: GalleryItem;
   onClose: () => void;
-  flipState: Flip.FlipState | null;
 };
 
-export function Modal({ item, onClose, flipState }: ModalProps) {
+export function Modal({ item, onClose }: ModalProps) {
   const [copied, setCopied] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const afterImgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -30,17 +24,6 @@ export function Modal({ item, onClose, flipState }: ModalProps) {
     closeButtonRef.current?.focus();
   }, []);
 
-  useGSAP(() => {
-    if (!flipState || !afterImgRef.current) return;
-    Flip.from(flipState, {
-      targets: afterImgRef.current,
-      duration: 0.5,
-      ease: 'power2.inOut',
-      scale: true,
-      absolute: true,
-    });
-  }, []);
-
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(item.prompt);
@@ -52,15 +35,23 @@ export function Modal({ item, onClose, flipState }: ModalProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-sm opacity-100 transition-opacity duration-200 starting:opacity-0"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
         role="dialog"
         aria-modal="true"
         aria-label="Gallery item detail"
-        className="relative mx-4 max-w-2xl scale-100 rounded-lg bg-zinc-50 p-6 opacity-100 transition-all duration-200 starting:scale-95 starting:opacity-0 dark:bg-zinc-950"
+        className="relative mx-4 max-w-2xl rounded-lg bg-zinc-50 p-6 dark:bg-zinc-950"
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -75,8 +66,8 @@ export function Modal({ item, onClose, flipState }: ModalProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <img src={item.beforeImage} alt="Before" className="aspect-square w-full rounded-lg object-cover" />
-          <img
-            ref={afterImgRef}
+          <motion.img
+            layoutId={`gallery-image-${item.id}`}
             src={item.afterImage}
             alt="After"
             className="aspect-square w-full rounded-lg object-cover"
@@ -96,7 +87,7 @@ export function Modal({ item, onClose, flipState }: ModalProps) {
             {copied ? <Check size={18} /> : <Copy size={18} />}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
