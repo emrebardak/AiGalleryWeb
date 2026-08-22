@@ -31,8 +31,8 @@ export function GalleryGrid({ items, activeCategory, onSelect }: GalleryGridProp
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.2 }}
-      className="columns-2 gap-4 px-4 pb-16 md:columns-3 lg:columns-4"
+      viewport={{ once: true, amount: 0.2 }}
+      className="mx-auto columns-2 gap-4 px-6 pb-16 sm:px-10 md:columns-3 lg:columns-4 lg:px-16 xl:px-24"
     >
       {visibleItems.map((item) => (
         <motion.div key={item.id} variants={cardVariants} className="mb-4 break-inside-avoid">
