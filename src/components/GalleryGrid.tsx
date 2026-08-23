@@ -8,7 +8,7 @@ type GalleryGridProps = {
   onSelect: (item: GalleryItem) => void;
 };
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.08 },
