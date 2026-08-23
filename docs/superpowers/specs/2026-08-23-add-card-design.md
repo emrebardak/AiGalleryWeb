@@ -4,7 +4,7 @@
 A public (no-auth) mobile-friendly form for the site owner to add new gallery items from their phone, without touching a code editor. Submitting the form commits a new entry directly to the site's data file via a serverless function using a GitHub token, which triggers the Cloudflare Pages auto-deploy set up in the deploy sub-project.
 
 ## Depends on
-[2026-08-23-deploy-design.md](2026-08-23-deploy-design.md) — Cloudflare Pages hosting and Pages Functions must be live first.
+[2026-08-23-deploy-design.md](2026-08-23-deploy-design.md) — Cloudflare Workers static-assets hosting must be live first.
 
 ## Data model change
 `src/data/gallery.ts` currently holds the 16 gallery items as an inline hardcoded TS array. That's fine for hand-editing but risky for a function to edit programmatically (regex-splicing into TS syntax is fragile). Move the data to `src/data/gallery.json`, with `gallery.ts` reduced to:
@@ -31,10 +31,10 @@ Submit button disabled until category, after-URL, and prompt are non-empty. Styl
 On submit: POST `{ category, afterImage, beforeImage, prompt }` as JSON to `/api/add-card`. On success, show a confirmation message ("Added. Live in a minute or two.") and clear the form. On failure, show the error inline and leave the form filled in so it can be retried.
 
 ## Serverless function
-`functions/api/add-card.ts` — Cloudflare Pages Functions file-based route, becomes `POST /api/add-card`.
+`worker/index.ts` — a Worker script declared in a `wrangler.jsonc` config committed to the repo root, which binds the static assets directory (`dist`) AND defines a `fetch` handler that checks the request path/method: if `POST /api/add-card`, run the add-card logic below; otherwise fall through to serving the static assets binding.
 
 1. Validate the request body: `category` and `prompt` non-empty strings, `afterImage` a non-empty string. Reject with 400 otherwise.
-2. `GET` the current `gallery.json` from the GitHub Contents API (repo/branch read from env vars `GITHUB_REPO`, `GITHUB_BRANCH`; token from Pages secret `GITHUB_TOKEN`, a fine-grained PAT scoped to Contents: Read/Write on just this repo)
+2. `GET` the current `gallery.json` from the GitHub Contents API (repo/branch read from env vars `GITHUB_REPO`, `GITHUB_BRANCH`; token from Worker secret `GITHUB_TOKEN`, set via `wrangler secret put GITHUB_TOKEN` or the Cloudflare dashboard's Workers settings, a fine-grained PAT scoped to Contents: Read/Write on just this repo)
 3. Parse the JSON, append a new item: `{ id: category.toLowerCase() + '-' + Date.now(), category, beforeImage: beforeImage || '/images/before/placeholder.svg', afterImage, prompt }`
 4. Re-stringify, `PUT` back via the Contents API (with the SHA from step 2) — commits directly to the branch from `GITHUB_BRANCH`
 5. Return 200 on success, or the GitHub API's error status/message on failure
