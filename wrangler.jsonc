@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "promptgallery",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-23",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "GITHUB_REPO": "emrebardak/AiGalleryWeb",
+    "GITHUB_BRANCH": "master"
+  }
+}
