@@ -18,6 +18,12 @@ export function Hero() {
         <p className="max-w-md text-sm text-zinc-300 md:text-base">
           Prompts and the images they became, before and after, side by side.
         </p>
+        <a
+          href="#add-card"
+          className="mt-2 rounded-full border border-zinc-50/30 px-4 py-2 text-xs text-zinc-50 transition-colors hover:bg-zinc-50/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        >
+          Add a card
+        </a>
       </div>
       <a
         href="#gallery"
