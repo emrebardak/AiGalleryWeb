@@ -22,7 +22,7 @@ Live at https://promptgallery.agunzagunt.workers.dev, auto-deploying from `maste
 - Pure logic (`appendGalleryItem`, `removeGalleryItem` in `worker/addCard.ts`) is unit tested with Vitest (`npm test`); the Worker's fetch/GitHub-API glue is not.
 
 ## Visual design
-- **Colors:** cold mono, dark-only — `zinc-950` background / `zinc-50` text. No light theme, no theme toggle. One accent (electric blue) only for copy-button success state + focus rings. Never introduce a second accent color.
+- **Colors:** cold mono, dark-only — `zinc-950` background / `zinc-50` text. No light theme, no theme toggle. Electric blue for focus rings everywhere. One deliberate exception: the Modal's copy-prompt button turns green (`text-green-500`) on success (explicit user call, overriding the original single-accent rule for that one state). Don't add further colors beyond these two without asking — error text stays plain `zinc-400`, not red.
 - **Fonts:** `Boxing` (self-hosted, `public/fonts/Boxing-Regular.woff2`) for the hero headline ONLY. `JetBrains Mono` for everything else (nav, buttons, modal prompt text, body). Self-hosted `@font-face`, no Google Fonts `<link>`.
 - **Grid:** masonry via CSS columns (`columns-2 md:columns-3 lg:columns-4`, cards keep natural photo aspect ratio, `break-inside-avoid`) — not a strict equal grid.
 - **Radius:** `rounded-lg` on cards/modal, `rounded-full` on pills/filter buttons. Don't introduce other radius values.

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Copy, Check, Trash2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { GalleryItem } from '../types';
 
 type ModalProps = {
@@ -109,17 +109,41 @@ export function Modal({ item, onClose }: ModalProps) {
           transition={{ duration: 0.25 }}
           className="mt-4 flex items-start justify-between gap-4"
         >
-          <p className="text-sm text-zinc-50">{item.prompt}</p>
+          <p className="line-clamp-3 text-sm text-zinc-50">{item.prompt}</p>
           <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
               onClick={handleCopy}
               aria-label="Copy prompt"
-              className={`rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                copied ? 'text-blue-500' : 'text-zinc-50 hover:opacity-70'
+              className={`overflow-hidden rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                copied ? 'text-green-500' : 'text-zinc-50 hover:opacity-70'
               }`}
             >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
+              <AnimatePresence mode="wait" initial={false}>
+                {copied ? (
+                  <motion.span
+                    key="check"
+                    initial={{ scale: 0.4, opacity: 0, rotate: -45 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    exit={{ scale: 0.4, opacity: 0 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    className="flex"
+                  >
+                    <Check size={18} />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="copy"
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.4, opacity: 0 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    className="flex"
+                  >
+                    <Copy size={18} />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
             <button
               type="button"

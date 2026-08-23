@@ -38,7 +38,7 @@ async function uploadImage(file: File): Promise<string> {
 }
 
 export function AddCardPage({ categories }: AddCardPageProps) {
-  const [category, setCategory] = useState(categories[0] ?? '');
+  const [category, setCategory] = useState('');
   const [afterImage, setAfterImage] = useState('');
   const [beforeImage, setBeforeImage] = useState('');
   const [prompt, setPrompt] = useState('');
@@ -53,7 +53,7 @@ export function AddCardPage({ categories }: AddCardPageProps) {
   const afterFileInputRef = useRef<HTMLInputElement>(null);
   const beforeFileInputRef = useRef<HTMLInputElement>(null);
 
-  const canSubmit = category.trim() !== '' && afterImage.trim() !== '' && prompt.trim() !== '';
+  const canSubmit = afterImage.trim() !== '' && prompt.trim() !== '';
 
   async function handleAfterFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -101,7 +101,7 @@ export function AddCardPage({ categories }: AddCardPageProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          category,
+          category: category.trim() === '' ? 'All' : category,
           afterImage,
           beforeImage: beforeImage.trim() === '' ? undefined : beforeImage,
           prompt,
@@ -118,6 +118,7 @@ export function AddCardPage({ categories }: AddCardPageProps) {
       }
 
       setStatus('success');
+      setCategory('');
       setAfterImage('');
       setBeforeImage('');
       setPrompt('');
@@ -146,9 +147,10 @@ export function AddCardPage({ categories }: AddCardPageProps) {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <label className="flex flex-col gap-2 text-sm text-zinc-300">
-          Category
+          Category (optional)
           {categories.length > 0 ? (
             <select value={category} onChange={(event) => setCategory(event.target.value)} className={inputClasses}>
+              <option value="">All (default)</option>
               {categories.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -158,10 +160,9 @@ export function AddCardPage({ categories }: AddCardPageProps) {
           ) : (
             <input
               type="text"
-              required
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              placeholder="e.g. Nature"
+              placeholder="e.g. Nature (defaults to All)"
               className={inputClasses}
             />
           )}
