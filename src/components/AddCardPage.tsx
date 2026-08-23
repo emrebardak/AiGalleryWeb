@@ -1,10 +1,41 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { Upload } from 'lucide-react';
 
 type AddCardPageProps = {
   categories: string[];
 };
 
 type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
+type UploadStatus = 'idle' | 'uploading' | 'error';
+
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+
+async function uploadImage(file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Only image files can be uploaded');
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error('Image too large (max 8MB)');
+  }
+
+  const response = await fetch('/api/upload-image', {
+    method: 'POST',
+    headers: { 'Content-Type': file.type },
+    body: file,
+  });
+
+  if (!response.ok) {
+    const data: unknown = await response.json().catch(() => null);
+    const message =
+      typeof data === 'object' && data !== null && 'error' in data && typeof data.error === 'string'
+        ? data.error
+        : `Upload failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  const data = (await response.json()) as { url: string };
+  return data.url;
+}
 
 export function AddCardPage({ categories }: AddCardPageProps) {
   const [category, setCategory] = useState(categories[0] ?? '');
@@ -14,7 +45,49 @@ export function AddCardPage({ categories }: AddCardPageProps) {
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [afterUploadStatus, setAfterUploadStatus] = useState<UploadStatus>('idle');
+  const [afterUploadError, setAfterUploadError] = useState('');
+  const [beforeUploadStatus, setBeforeUploadStatus] = useState<UploadStatus>('idle');
+  const [beforeUploadError, setBeforeUploadError] = useState('');
+
+  const afterFileInputRef = useRef<HTMLInputElement>(null);
+  const beforeFileInputRef = useRef<HTMLInputElement>(null);
+
   const canSubmit = category.trim() !== '' && afterImage.trim() !== '' && prompt.trim() !== '';
+
+  async function handleAfterFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setAfterUploadStatus('uploading');
+    setAfterUploadError('');
+    try {
+      const url = await uploadImage(file);
+      setAfterImage(url);
+      setAfterUploadStatus('idle');
+    } catch (error) {
+      setAfterUploadStatus('error');
+      setAfterUploadError(error instanceof Error ? error.message : 'Upload failed');
+    }
+  }
+
+  async function handleBeforeFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setBeforeUploadStatus('uploading');
+    setBeforeUploadError('');
+    try {
+      const url = await uploadImage(file);
+      setBeforeImage(url);
+      setBeforeUploadStatus('idle');
+    } catch (error) {
+      setBeforeUploadStatus('error');
+      setBeforeUploadError(error instanceof Error ? error.message : 'Upload failed');
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -56,6 +129,9 @@ export function AddCardPage({ categories }: AddCardPageProps) {
 
   const inputClasses =
     'rounded-lg bg-zinc-900 px-4 py-3 text-zinc-50 placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
+  const urlInputClasses = `${inputClasses} flex-1`;
+  const uploadButtonClasses =
+    'shrink-0 rounded-lg bg-zinc-900 p-3 text-zinc-50 transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-40';
 
   return (
     <section className="mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center gap-6 px-6 py-16">
@@ -73,28 +149,72 @@ export function AddCardPage({ categories }: AddCardPageProps) {
           </select>
         </label>
 
-        <label className="flex flex-col gap-2 text-sm text-zinc-300">
-          After image URL
-          <input
-            type="url"
-            required
-            value={afterImage}
-            onChange={(event) => setAfterImage(event.target.value)}
-            placeholder="https://..."
-            className={inputClasses}
-          />
-        </label>
+        <div className="flex flex-col gap-2 text-sm text-zinc-300">
+          <span>After image URL</span>
+          <div className="flex items-center gap-2">
+            <input
+              type="url"
+              required
+              value={afterImage}
+              onChange={(event) => setAfterImage(event.target.value)}
+              placeholder="https://... or upload"
+              aria-label="After image URL"
+              className={urlInputClasses}
+            />
+            <button
+              type="button"
+              onClick={() => afterFileInputRef.current?.click()}
+              disabled={afterUploadStatus === 'uploading'}
+              aria-label="Upload after image"
+              className={uploadButtonClasses}
+            >
+              <Upload size={18} />
+            </button>
+            <input
+              ref={afterFileInputRef}
+              type="file"
+              accept="image/*"
+              tabIndex={-1}
+              onChange={handleAfterFileChange}
+              className="sr-only"
+            />
+          </div>
+          {afterUploadStatus === 'uploading' && <p className="text-xs text-zinc-500">Uploading...</p>}
+          {afterUploadStatus === 'error' && <p className="text-xs text-zinc-400">{afterUploadError}</p>}
+        </div>
 
-        <label className="flex flex-col gap-2 text-sm text-zinc-300">
-          Before image URL (optional)
-          <input
-            type="url"
-            value={beforeImage}
-            onChange={(event) => setBeforeImage(event.target.value)}
-            placeholder="https://..."
-            className={inputClasses}
-          />
-        </label>
+        <div className="flex flex-col gap-2 text-sm text-zinc-300">
+          <span>Before image URL (optional)</span>
+          <div className="flex items-center gap-2">
+            <input
+              type="url"
+              value={beforeImage}
+              onChange={(event) => setBeforeImage(event.target.value)}
+              placeholder="https://... or upload"
+              aria-label="Before image URL"
+              className={urlInputClasses}
+            />
+            <button
+              type="button"
+              onClick={() => beforeFileInputRef.current?.click()}
+              disabled={beforeUploadStatus === 'uploading'}
+              aria-label="Upload before image"
+              className={uploadButtonClasses}
+            >
+              <Upload size={18} />
+            </button>
+            <input
+              ref={beforeFileInputRef}
+              type="file"
+              accept="image/*"
+              tabIndex={-1}
+              onChange={handleBeforeFileChange}
+              className="sr-only"
+            />
+          </div>
+          {beforeUploadStatus === 'uploading' && <p className="text-xs text-zinc-500">Uploading...</p>}
+          {beforeUploadStatus === 'error' && <p className="text-xs text-zinc-400">{beforeUploadError}</p>}
+        </div>
 
         <label className="flex flex-col gap-2 text-sm text-zinc-300">
           Prompt

@@ -2,10 +2,13 @@ import { appendGalleryItem, type NewCardInput } from './addCard';
 
 interface Env {
   ASSETS: Fetcher;
+  IMAGES: R2Bucket;
   GITHUB_TOKEN: string;
   GITHUB_REPO: string;
   GITHUB_BRANCH: string;
 }
+
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -15,9 +18,55 @@ export default {
       return handleAddCard(request, env);
     }
 
+    if (request.method === 'POST' && url.pathname === '/api/upload-image') {
+      return handleUploadImage(request, env);
+    }
+
+    if (request.method === 'GET' && url.pathname.startsWith('/images/uploads/')) {
+      return handleServeUpload(url, env);
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
+
+async function handleUploadImage(request: Request, env: Env): Promise<Response> {
+  const contentType = request.headers.get('Content-Type') ?? '';
+  if (!contentType.startsWith('image/')) {
+    return jsonResponse({ error: 'Only image uploads are allowed' }, 400);
+  }
+
+  const body = await request.arrayBuffer();
+  if (body.byteLength === 0) {
+    return jsonResponse({ error: 'Empty upload' }, 400);
+  }
+  if (body.byteLength > MAX_UPLOAD_BYTES) {
+    return jsonResponse({ error: 'Image too large (max 8MB)' }, 400);
+  }
+
+  const extension = contentType.split('/')[1]?.split('+')[0] || 'jpg';
+  const filename = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+  await env.IMAGES.put(`uploads/${filename}`, body, { httpMetadata: { contentType } });
+
+  return jsonResponse({ url: `/images/uploads/${filename}` }, 200);
+}
+
+async function handleServeUpload(url: URL, env: Env): Promise<Response> {
+  const filename = url.pathname.slice('/images/uploads/'.length);
+  const object = await env.IMAGES.get(`uploads/${filename}`);
+
+  if (!object) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  return new Response(object.body, {
+    headers: {
+      'Content-Type': object.httpMetadata?.contentType ?? 'application/octet-stream',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
+  });
+}
 
 async function handleAddCard(request: Request, env: Env): Promise<Response> {
   let body: unknown;

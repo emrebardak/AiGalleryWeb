@@ -10,5 +10,8 @@
   "vars": {
     "GITHUB_REPO": "emrebardak/AiGalleryWeb",
     "GITHUB_BRANCH": "master"
-  }
+  },
+  "r2_buckets": [
+    { "binding": "IMAGES", "bucket_name": "promptgallery-uploads" }
+  ]
 }
