@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Copy, Check, Trash2 } from 'lucide-react';
+import { Copy, Check, Trash2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { GalleryItem } from '../types';
 
@@ -63,7 +63,7 @@ export function Modal({ item, onClose }: ModalProps) {
       }
 
       setDeleteStatus('deleted');
-      setTimeout(onClose, 800);
+      setTimeout(onClose, 1300);
     } catch (error) {
       setDeleteStatus('error');
       setDeleteError(error instanceof Error ? error.message : 'Something went wrong');
@@ -148,16 +148,54 @@ export function Modal({ item, onClose }: ModalProps) {
             <button
               type="button"
               onClick={handleDelete}
-              disabled={deleteStatus === 'deleting'}
+              disabled={deleteStatus === 'deleting' || deleteStatus === 'deleted'}
               aria-label="Delete card"
-              className="rounded-full p-2 text-zinc-50 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-40"
+              className={`overflow-hidden rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                deleteStatus === 'deleted' ? 'text-red-500' : 'text-zinc-50 hover:opacity-70 disabled:opacity-40'
+              }`}
             >
-              <Trash2 size={18} />
+              <AnimatePresence mode="wait" initial={false}>
+                {deleteStatus === 'deleted' ? (
+                  <motion.span
+                    key="x"
+                    initial={{ scale: 0.4, opacity: 0, rotate: -45 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    exit={{ scale: 0.4, opacity: 0 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    className="flex"
+                  >
+                    <X size={18} />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="trash"
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.4, opacity: 0 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    className="flex"
+                  >
+                    <Trash2 size={18} />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </motion.div>
 
-        {deleteStatus === 'deleted' && <p className="mt-2 text-right text-xs text-blue-500">Deleted.</p>}
+        <AnimatePresence>
+          {deleteStatus === 'deleted' && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mt-3 text-center text-sm font-medium text-red-500"
+            >
+              Card deleted
+            </motion.p>
+          )}
+        </AnimatePresence>
         {deleteStatus === 'error' && <p className="mt-2 text-right text-xs text-zinc-400">{deleteError}</p>}
       </motion.div>
     </motion.div>
