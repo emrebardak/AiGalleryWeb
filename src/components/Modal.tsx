@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Copy, Check, X, Trash2 } from 'lucide-react';
+import { Copy, Check, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { GalleryItem } from '../types';
 
@@ -15,7 +15,7 @@ export function Modal({ item, onClose }: ModalProps) {
   const [imageLanded, setImageLanded] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState<DeleteStatus>('idle');
   const [deleteError, setDeleteError] = useState('');
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -26,7 +26,7 @@ export function Modal({ item, onClose }: ModalProps) {
   }, [onClose]);
 
   useEffect(() => {
-    closeButtonRef.current?.focus();
+    panelRef.current?.focus();
   }, []);
 
   async function handleCopy() {
@@ -80,6 +80,8 @@ export function Modal({ item, onClose }: ModalProps) {
       onClick={onClose}
     >
       <motion.div
+        ref={panelRef}
+        tabIndex={-1}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -87,19 +89,9 @@ export function Modal({ item, onClose }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Gallery item detail"
-        className="relative mx-4 max-w-2xl rounded-lg bg-zinc-950 p-6"
+        className="relative mx-4 max-w-2xl rounded-lg bg-zinc-950 p-6 focus:outline-none"
         onClick={(event) => event.stopPropagation()}
       >
-        <button
-          ref={closeButtonRef}
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 text-zinc-50 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-        >
-          <X size={20} />
-        </button>
-
         <div className="grid grid-cols-2 gap-4">
           <img src={item.beforeImage} alt="Before" className="aspect-square w-full rounded-lg object-cover" />
           <motion.img

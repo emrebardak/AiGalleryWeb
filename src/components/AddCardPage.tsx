@@ -147,13 +147,24 @@ export function AddCardPage({ categories }: AddCardPageProps) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <label className="flex flex-col gap-2 text-sm text-zinc-300">
           Category
-          <select value={category} onChange={(event) => setCategory(event.target.value)} className={inputClasses}>
-            {categories.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          {categories.length > 0 ? (
+            <select value={category} onChange={(event) => setCategory(event.target.value)} className={inputClasses}>
+              {categories.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              required
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+              placeholder="e.g. Nature"
+              className={inputClasses}
+            />
+          )}
         </label>
 
         <div className="flex flex-col gap-2 text-sm text-zinc-300">
