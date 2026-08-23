@@ -49,7 +49,8 @@ async function handleUploadImage(request: Request, env: Env): Promise<Response> 
 
   await env.IMAGES.put(`uploads/${filename}`, body, { httpMetadata: { contentType } });
 
-  return jsonResponse({ url: `/images/uploads/${filename}` }, 200);
+  const origin = new URL(request.url).origin;
+  return jsonResponse({ url: `${origin}/images/uploads/${filename}` }, 200);
 }
 
 async function handleServeUpload(url: URL, env: Env): Promise<Response> {
