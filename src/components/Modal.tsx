@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Copy, Check, X } from 'lucide-react';
+import { Copy, Check, X, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { GalleryItem } from '../types';
 
@@ -8,9 +8,13 @@ type ModalProps = {
   onClose: () => void;
 };
 
+type DeleteStatus = 'idle' | 'deleting' | 'deleted' | 'error';
+
 export function Modal({ item, onClose }: ModalProps) {
   const [copied, setCopied] = useState(false);
   const [imageLanded, setImageLanded] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState<DeleteStatus>('idle');
+  const [deleteError, setDeleteError] = useState('');
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -32,6 +36,37 @@ export function Modal({ item, onClose }: ModalProps) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // clipboard unavailable; leave the icon unchanged, no error UI per spec
+    }
+  }
+
+  async function handleDelete() {
+    if (deleteStatus === 'deleting') return;
+    if (!window.confirm('Delete this card?')) return;
+
+    setDeleteStatus('deleting');
+    setDeleteError('');
+
+    try {
+      const response = await fetch('/api/delete-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id }),
+      });
+
+      if (!response.ok) {
+        const data: unknown = await response.json().catch(() => null);
+        const message =
+          typeof data === 'object' && data !== null && 'error' in data && typeof data.error === 'string'
+            ? data.error
+            : `Request failed (${response.status})`;
+        throw new Error(message);
+      }
+
+      setDeleteStatus('deleted');
+      setTimeout(onClose, 800);
+    } catch (error) {
+      setDeleteStatus('error');
+      setDeleteError(error instanceof Error ? error.message : 'Something went wrong');
     }
   }
 
@@ -83,17 +118,31 @@ export function Modal({ item, onClose }: ModalProps) {
           className="mt-4 flex items-start justify-between gap-4"
         >
           <p className="text-sm text-zinc-50">{item.prompt}</p>
-          <button
-            type="button"
-            onClick={handleCopy}
-            aria-label="Copy prompt"
-            className={`shrink-0 rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-              copied ? 'text-blue-500' : 'text-zinc-50 hover:opacity-70'
-            }`}
-          >
-            {copied ? <Check size={18} /> : <Copy size={18} />}
-          </button>
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={handleCopy}
+              aria-label="Copy prompt"
+              className={`rounded-full p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                copied ? 'text-blue-500' : 'text-zinc-50 hover:opacity-70'
+              }`}
+            >
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleteStatus === 'deleting'}
+              aria-label="Delete card"
+              className="rounded-full p-2 text-zinc-50 transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-40"
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
         </motion.div>
+
+        {deleteStatus === 'deleted' && <p className="mt-2 text-right text-xs text-blue-500">Deleted.</p>}
+        {deleteStatus === 'error' && <p className="mt-2 text-right text-xs text-zinc-400">{deleteError}</p>}
       </motion.div>
     </motion.div>
   );

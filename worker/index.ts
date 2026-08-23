@@ -1,4 +1,4 @@
-import { appendGalleryItem, type NewCardInput } from './addCard';
+import { appendGalleryItem, removeGalleryItem, type NewCardInput } from './addCard';
 
 interface Env {
   ASSETS: Fetcher;
@@ -16,6 +16,10 @@ export default {
 
     if (request.method === 'POST' && url.pathname === '/api/add-card') {
       return handleAddCard(request, env);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/api/delete-card') {
+      return handleDeleteCard(request, env);
     }
 
     if (request.method === 'POST' && url.pathname === '/api/upload-image') {
@@ -114,6 +118,64 @@ async function handleAddCard(request: Request, env: Env): Promise<Response> {
   }
 
   return jsonResponse({ ok: true }, 200);
+}
+
+async function handleDeleteCard(request: Request, env: Env): Promise<Response> {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: 'Invalid JSON body' }, 400);
+  }
+
+  const id = extractId(body);
+  if (!id) {
+    return jsonResponse({ error: 'id is required' }, 400);
+  }
+
+  const contentsPath = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/src/data/gallery.json`;
+  const githubHeaders = {
+    Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'ai-gallery-add-card-worker',
+  };
+
+  const getResponse = await fetch(`${contentsPath}?ref=${env.GITHUB_BRANCH}`, { headers: githubHeaders });
+  if (!getResponse.ok) {
+    return jsonResponse({ error: `GitHub read failed: ${getResponse.status}` }, 502);
+  }
+
+  const file = (await getResponse.json()) as { content: string; sha: string };
+  const currentJson = base64ToUtf8(file.content);
+  const items = JSON.parse(currentJson) as { id: string }[];
+  if (!items.some((item) => item.id === id)) {
+    return jsonResponse({ error: 'Card not found' }, 404);
+  }
+
+  const updatedJson = removeGalleryItem(currentJson, id);
+
+  const putResponse = await fetch(contentsPath, {
+    method: 'PUT',
+    headers: { ...githubHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: `Delete gallery card: ${id}`,
+      content: utf8ToBase64(updatedJson),
+      sha: file.sha,
+      branch: env.GITHUB_BRANCH,
+    }),
+  });
+
+  if (!putResponse.ok) {
+    return jsonResponse({ error: `GitHub write failed: ${putResponse.status}` }, 502);
+  }
+
+  return jsonResponse({ ok: true }, 200);
+}
+
+function extractId(body: unknown): string | null {
+  if (typeof body !== 'object' || body === null) return null;
+  const record = body as Record<string, unknown>;
+  return typeof record.id === 'string' && record.id.trim() !== '' ? record.id : null;
 }
 
 function validateInput(body: unknown): NewCardInput | null {

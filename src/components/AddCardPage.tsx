@@ -135,6 +135,13 @@ export function AddCardPage({ categories }: AddCardPageProps) {
 
   return (
     <section className="mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center gap-6 px-6 py-16">
+      <a
+        href="#"
+        className="self-start text-sm text-zinc-400 underline-offset-4 transition-colors hover:text-zinc-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+      >
+        ← Back to gallery
+      </a>
+
       <h1 className="font-hero text-3xl text-zinc-50">Add a card</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

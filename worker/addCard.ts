@@ -23,3 +23,9 @@ export function appendGalleryItem(currentJson: string, input: NewCardInput, now:
   items.push(newItem);
   return JSON.stringify(items, null, 2);
 }
+
+export function removeGalleryItem(currentJson: string, id: string): string {
+  const items: GalleryItem[] = JSON.parse(currentJson);
+  const filtered = items.filter((item) => item.id !== id);
+  return JSON.stringify(filtered, null, 2);
+}

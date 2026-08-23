@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { appendGalleryItem } from './addCard';
+import { appendGalleryItem, removeGalleryItem } from './addCard';
 
 const existing = JSON.stringify([
   {
@@ -63,5 +63,44 @@ describe('appendGalleryItem', () => {
         prompt: 'p',
       },
     ]);
+  });
+});
+
+describe('removeGalleryItem', () => {
+  it('removes the item with the matching id, preserving the rest', () => {
+    const twoItems = JSON.stringify([
+      ...JSON.parse(existing),
+      {
+        id: 'urban-1',
+        category: 'Urban',
+        beforeImage: '/images/before/placeholder.svg',
+        afterImage: '/images/after/urban-1.jpg',
+        prompt: 'second item',
+      },
+    ]);
+
+    const result = JSON.parse(removeGalleryItem(twoItems, 'nature-1'));
+
+    expect(result).toEqual([
+      {
+        id: 'urban-1',
+        category: 'Urban',
+        beforeImage: '/images/before/placeholder.svg',
+        afterImage: '/images/after/urban-1.jpg',
+        prompt: 'second item',
+      },
+    ]);
+  });
+
+  it('leaves the list unchanged when the id does not match anything', () => {
+    const result = JSON.parse(removeGalleryItem(existing, 'does-not-exist'));
+
+    expect(result).toEqual(JSON.parse(existing));
+  });
+
+  it('removes down to an empty list', () => {
+    const result = JSON.parse(removeGalleryItem(existing, 'nature-1'));
+
+    expect(result).toEqual([]);
   });
 });
