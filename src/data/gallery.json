@@ -124,5 +124,12 @@
     "beforeImage": "/images/before/placeholder.svg",
     "afterImage": "https://share.icloud.com/photos/065CZXnZgCrKcb_st0wuV-5OQ",
     "prompt": "1234"
+  },
+  {
+    "id": "nature-1787479071615",
+    "category": "Nature",
+    "beforeImage": "/images/before/placeholder.svg",
+    "afterImage": "https://promptgallery.agunzagunt.workers.dev/images/uploads/1787479068135-72bf21b0-f146-4682-8a9a-935b972ed4fa.jpeg",
+    "prompt": "denem1"
   }
 ]
