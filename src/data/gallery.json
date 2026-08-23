@@ -117,5 +117,12 @@
     "beforeImage": "/images/before/placeholder.svg",
     "afterImage": "https://imgur.com/a/4FaFWSJ",
     "prompt": "abcde\n"
+  },
+  {
+    "id": "nature-1787478343267",
+    "category": "Nature",
+    "beforeImage": "/images/before/placeholder.svg",
+    "afterImage": "https://share.icloud.com/photos/065CZXnZgCrKcb_st0wuV-5OQ",
+    "prompt": "1234"
   }
 ]
