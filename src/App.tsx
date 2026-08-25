@@ -9,7 +9,9 @@ import { AddCardPage } from './components/AddCardPage';
 import { galleryItems } from './data/gallery';
 import type { GalleryItem } from './types';
 
-const categories = ['All', ...new Set(galleryItems.map((item) => item.category))];
+const realCategories = new Set(galleryItems.map((item) => item.category));
+realCategories.delete('All');
+const categories = ['All', ...realCategories];
 const addCardCategories = categories.filter((category) => category !== 'All');
 
 function useHash(): string {
