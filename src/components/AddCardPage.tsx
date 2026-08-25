@@ -200,6 +200,9 @@ export function AddCardPage({ categories }: AddCardPageProps) {
           </div>
           {afterUploadStatus === 'uploading' && <p className="text-xs text-zinc-500">Uploading...</p>}
           {afterUploadStatus === 'error' && <p className="text-xs text-zinc-400">{afterUploadError}</p>}
+          {afterImage.trim() !== '' && (
+            <img src={afterImage} alt="" className="h-24 w-24 rounded-lg object-cover" />
+          )}
         </div>
 
         <div className="flex flex-col gap-2 text-sm text-zinc-300">
@@ -233,6 +236,9 @@ export function AddCardPage({ categories }: AddCardPageProps) {
           </div>
           {beforeUploadStatus === 'uploading' && <p className="text-xs text-zinc-500">Uploading...</p>}
           {beforeUploadStatus === 'error' && <p className="text-xs text-zinc-400">{beforeUploadError}</p>}
+          {beforeImage.trim() !== '' && (
+            <img src={beforeImage} alt="" className="h-24 w-24 rounded-lg object-cover" />
+          )}
         </div>
 
         <label className="flex flex-col gap-2 text-sm text-zinc-300">
